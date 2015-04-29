@@ -915,6 +915,8 @@ object Client extends Logging {
       val mirror = universe.runtimeMirror(getClass.getClassLoader)
 
       try {
+        HiveInstrumentationAgent.instrument
+
         val hiveClass = mirror.classLoader.loadClass("org.apache.hadoop.hive.ql.metadata.Hive")
         val hive = hiveClass.getMethod("get").invoke(null)
 
@@ -939,7 +941,7 @@ object Client extends Logging {
           if (principal != None && username != None) {
             val tokenStr = hiveClass.getMethod("getDelegationToken",
               classOf[java.lang.String], classOf[java.lang.String])
-              .invoke(hive, username.get, principal.get).asInstanceOf[java.lang.String]
+              .invoke(hive, username.get, username.get).asInstanceOf[java.lang.String]
 
             val hive2Token = new Token[DelegationTokenIdentifier]()
             hive2Token.decodeFromUrlString(tokenStr)
