@@ -39,6 +39,7 @@ import org.apache.spark.sql.catalyst.analysis.{Analyzer, EliminateSubQueries, Ov
 import org.apache.spark.sql.catalyst.plans.logical._
 import org.apache.spark.sql.execution.{ExecutedCommand, ExtractPythonUdfs, QueryExecutionException, SetCommand}
 import org.apache.spark.sql.hive.execution.{DescribeHiveTableCommand, HiveNativeCommand}
+import org.apache.spark.sql.hive.instrument.HiveInstrumentationAgent
 import org.apache.spark.sql.sources.{DDLParser, DataSourceStrategy}
 import org.apache.spark.sql.types._
 
@@ -53,6 +54,7 @@ class HiveContext(sc: SparkContext) extends SQLContext(sc) {
     override def dialect: String = getConf(SQLConf.DIALECT, "hiveql")
   }
 
+  HiveInstrumentationAgent.instrument
   /**
    * When true, enables an experimental feature where metastore tables that use the parquet SerDe
    * are automatically converted to use the Spark SQL parquet table scan, instead of the Hive
